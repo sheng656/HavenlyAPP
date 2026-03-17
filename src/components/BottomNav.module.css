@@ -1,0 +1,56 @@
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: white;
+  border-top: 1px solid #e8f0f8;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.08);
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.navItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 3px;
+  transition: transform 0.15s;
+}
+
+.navItem:active {
+  transform: scale(0.9);
+}
+
+.navEmoji {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.active .navEmoji {
+  transform: scale(1.15) translateY(-2px);
+}
+
+.navLabel {
+  font-size: 11px;
+  color: #aaa;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.active .navLabel {
+  color: #5ab4e8;
+  font-weight: 700;
+}
+
+.active .navEmoji {
+  filter: drop-shadow(0 2px 4px rgba(90, 180, 232, 0.4));
+}

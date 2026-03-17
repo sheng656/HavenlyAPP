@@ -1,0 +1,9 @@
+.app {
+  width: 100%;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  background: #f8fbff;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+}

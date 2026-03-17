@@ -1,0 +1,246 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f0f8ff 0%, #fff9f0 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 100px;
+}
+
+.back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #5a8fba;
+  cursor: pointer;
+  padding: 4px 0;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #2c5f8a;
+  text-align: center;
+  margin: 8px 0 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #7aa0b8;
+  text-align: center;
+  margin: 0 0 24px;
+}
+
+.moodGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 400px;
+}
+
+@media (max-width: 360px) {
+  .moodGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.moodBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 18px;
+  border: 3px solid transparent;
+  background: var(--mood-color, #ffe);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  opacity: 0.92;
+}
+
+.moodBtn:hover,
+.moodBtn:focus {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border-color: rgba(0, 0, 0, 0.15);
+  opacity: 1;
+}
+
+.moodBtn:active {
+  transform: scale(0.96);
+}
+
+.moodEmoji {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.moodLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Note step */
+.noteCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+  background: white;
+  border-radius: 24px;
+  padding: 28px 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-top: 16px;
+  gap: 12px;
+}
+
+.selectedMoodBig {
+  font-size: 64px;
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.noteTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #2c5f8a;
+  margin: 0;
+  text-align: center;
+}
+
+.notePrompt {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+}
+
+.noteInput {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #d0e8f8;
+  border-radius: 14px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  color: #333;
+  background: #f8fbff;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.noteInput:focus {
+  border-color: #5ab4e8;
+}
+
+.charCount {
+  font-size: 11px;
+  color: #bbb;
+  align-self: flex-end;
+  margin: -8px 0 0;
+}
+
+/* Done step */
+.doneCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+  background: white;
+  border-radius: 24px;
+  padding: 36px 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-top: 60px;
+  gap: 12px;
+  text-align: center;
+}
+
+.doneEmoji {
+  font-size: 72px;
+  animation: pop 0.4s ease;
+}
+
+.doneTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #2c5f8a;
+  margin: 0;
+}
+
+.doneText {
+  font-size: 16px;
+  color: #555;
+  margin: 0;
+}
+
+.coinsEarned {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f5a623;
+  margin: 4px 0;
+  background: #fff7e0;
+  padding: 8px 20px;
+  border-radius: 20px;
+}
+
+.doneActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Buttons */
+.btnPrimary {
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #5ab4e8, #3a90c8);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: transform 0.15s;
+}
+
+.btnPrimary:active {
+  transform: scale(0.97);
+}
+
+.btnSecondary {
+  padding: 12px 20px;
+  background: #f0f8ff;
+  color: #5ab4e8;
+  border: 2px solid #5ab4e8;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btnGhost {
+  padding: 10px 20px;
+  background: none;
+  color: #aaa;
+  border: none;
+  border-radius: 14px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+}
