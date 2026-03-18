@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Screen, Pet, Plant, AgeGroup } from '../types';
 import { getPets, savePets, getPlants, savePlants, getCoins, spendCoins, getStreak } from '../utils/storage';
+import SpeciesCard from '../components/SpeciesCard';
 import styles from './GardenScreen.module.css';
 
 interface Props {
@@ -19,6 +20,7 @@ export default function GardenScreen({ onNavigate }: Props) {
   const [feedAnim, setFeedAnim] = useState<string | null>(null);
   const [waterAnim, setWaterAnim] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [speciesCardId, setSpeciesCardId] = useState<string | null>(null);
   const streak = getStreak();
 
   const showMessage = (msg: string) => {
@@ -119,7 +121,12 @@ export default function GardenScreen({ onNavigate }: Props) {
       {tab === 'pets' && (
         <div className={styles.grid}>
           {pets.map((pet) => (
-            <div key={pet.id} className={`${styles.card} ${!pet.unlocked ? styles.locked : ''}`}>
+            <div
+              key={pet.id}
+              className={`${styles.card} ${!pet.unlocked ? styles.locked : ''}`}
+              onClick={pet.unlocked ? () => setSpeciesCardId(pet.id) : undefined}
+              style={pet.unlocked ? { cursor: 'pointer' } : {}}
+            >
               {!pet.unlocked && <div className={styles.lockOverlay}>🔒</div>}
               <div
                 className={`${styles.petEmoji} ${feedAnim === pet.id ? styles.bounce : ''}`}
@@ -136,8 +143,17 @@ export default function GardenScreen({ onNavigate }: Props) {
                     />
                   </div>
                   <div className={styles.happinessLabel}>开心度 {pet.happiness}%</div>
-                  <button className={styles.actionBtn} onClick={() => handleFeed(pet.id)}>
+                  <button
+                    className={styles.actionBtn}
+                    onClick={(e) => { e.stopPropagation(); handleFeed(pet.id); }}
+                  >
                     喂食 🍎 (-5🪙)
+                  </button>
+                  <button
+                    className={styles.encyclopediaBtn}
+                    onClick={(e) => { e.stopPropagation(); setSpeciesCardId(pet.id); }}
+                  >
+                    📖 百科
                   </button>
                 </>
               )}
@@ -157,7 +173,12 @@ export default function GardenScreen({ onNavigate }: Props) {
       {tab === 'plants' && (
         <div className={styles.grid}>
           {plants.map((plant) => (
-            <div key={plant.id} className={`${styles.card} ${!plant.unlocked ? styles.locked : ''}`}>
+            <div
+              key={plant.id}
+              className={`${styles.card} ${!plant.unlocked ? styles.locked : ''}`}
+              onClick={plant.unlocked ? () => setSpeciesCardId(plant.id) : undefined}
+              style={plant.unlocked ? { cursor: 'pointer' } : {}}
+            >
               {!plant.unlocked && <div className={styles.lockOverlay}>🔒</div>}
               <div
                 className={`${styles.petEmoji} ${waterAnim === plant.id ? styles.bounce : ''}`}
@@ -177,8 +198,17 @@ export default function GardenScreen({ onNavigate }: Props) {
                     />
                   </div>
                   <div className={styles.happinessLabel}>水分 {plant.waterLevel}%</div>
-                  <button className={styles.actionBtn} onClick={() => handleWater(plant.id)}>
+                  <button
+                    className={styles.actionBtn}
+                    onClick={(e) => { e.stopPropagation(); handleWater(plant.id); }}
+                  >
                     浇水 💧 (-3🪙)
+                  </button>
+                  <button
+                    className={styles.encyclopediaBtn}
+                    onClick={(e) => { e.stopPropagation(); setSpeciesCardId(plant.id); }}
+                  >
+                    📖 百科
                   </button>
                 </>
               )}
@@ -201,6 +231,13 @@ export default function GardenScreen({ onNavigate }: Props) {
         )}
         <p>💡 每次记录心情可获得 10🪙 · 快乐币可用于解锁和养护</p>
       </div>
+
+      {speciesCardId && (
+        <SpeciesCard
+          speciesId={speciesCardId}
+          onClose={() => setSpeciesCardId(null)}
+        />
+      )}
     </div>
   );
 }
