@@ -1,16 +1,17 @@
 import { useState, useMemo } from 'react';
-import type { Screen } from '../types';
+import type { Screen, AgeGroup } from '../types';
 import { getMoodEntries, getMoodEntriesLast7Days, getMoodEntriesLast30Days } from '../utils/storage';
 import { getMoodById } from '../utils/moodData';
 import styles from './DashboardScreen.module.css';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
+  ageGroup: AgeGroup;
 }
 
 type Period = '7' | '30' | 'all';
 
-export default function DashboardScreen({ onNavigate }: Props) {
+export default function DashboardScreen({ onNavigate, ageGroup }: Props) {
   const [period, setPeriod] = useState<Period>('7');
 
   const entries = useMemo(() => {

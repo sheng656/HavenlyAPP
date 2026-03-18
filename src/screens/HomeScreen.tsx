@@ -1,13 +1,17 @@
-import type { Screen } from '../types';
+import type { Screen, AgeGroup } from '../types';
+import AgeSwitcher from '../components/AgeSwitcher';
 import styles from './HomeScreen.module.css';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
+  ageGroup: AgeGroup;
+  onAgeChange: (age: AgeGroup) => void;
 }
 
-export default function HomeScreen({ onNavigate }: Props) {
+export default function HomeScreen({ onNavigate, ageGroup, onAgeChange }: Props) {
   return (
     <div className={styles.container}>
+      <AgeSwitcher current={ageGroup} onChange={onAgeChange} />
       <div className={styles.sky}>
         <div className={styles.cloud} style={{ top: '8%', left: '10%', animationDelay: '0s' }} />
         <div className={styles.cloud} style={{ top: '14%', right: '15%', animationDelay: '2s' }} />

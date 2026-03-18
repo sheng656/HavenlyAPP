@@ -53,3 +53,5 @@ export interface Plant {
 }
 
 export type Screen = 'home' | 'mood' | 'chat' | 'garden' | 'dashboard';
+
+export type AgeGroup = 'toddler' | 'kid' | 'teen';

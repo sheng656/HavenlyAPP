@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import type { Screen, Pet, Plant } from '../types';
+import type { Screen, Pet, Plant, AgeGroup } from '../types';
 import { getPets, savePets, getPlants, savePlants, getCoins, spendCoins } from '../utils/storage';
 import styles from './GardenScreen.module.css';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
+  ageGroup: AgeGroup;
 }
 
 const PLANT_STAGES = ['🌱', '🌿', '🪴', '🌸', '🌻'];
 const UNLOCK_COST = 50;
 
-export default function GardenScreen({ onNavigate }: Props) {
+export default function GardenScreen({ onNavigate, ageGroup }: Props) {
   const [tab, setTab] = useState<'pets' | 'plants'>('pets');
   const [pets, setPets] = useState<Pet[]>(getPets);
   const [plants, setPlants] = useState<Plant[]>(getPlants);

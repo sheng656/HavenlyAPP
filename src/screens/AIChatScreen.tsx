@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import type { Screen, ChatMessage } from '../types';
+import type { Screen, ChatMessage, AgeGroup } from '../types';
 import {
   AI_RESPONSES,
   DEFAULT_AI_RESPONSES,
@@ -12,6 +12,7 @@ import styles from './AIChatScreen.module.css';
 interface Props {
   onNavigate: (screen: Screen) => void;
   initialMoodId?: string | null;
+  ageGroup: AgeGroup;
 }
 
 const INITIAL_MSG: ChatMessage = {
@@ -21,8 +22,21 @@ const INITIAL_MSG: ChatMessage = {
   timestamp: Date.now(),
 };
 
-function getAIReply(userText: string, lastMoodId?: string | null): string {
+function getAIReply(userText: string, ageGroup: AgeGroup, lastMoodId?: string | null): string {
   if (isCrisisMessage(userText)) return CRISIS_RESPONSE;
+
+  if (ageGroup === 'toddler') {
+    // Toddler specific simple responses
+    const simpleResponses = [
+      '抱抱你 🫂',
+      '摸摸头 👋',
+      '我在呢 💙',
+      '别怕别怕 🛡️',
+      '你最棒了 🌟',
+    ];
+    return simpleResponses[Math.floor(Math.random() * simpleResponses.length)];
+  }
+
   if (lastMoodId && AI_RESPONSES[lastMoodId]) {
     const arr = AI_RESPONSES[lastMoodId];
     return arr[Math.floor(Math.random() * arr.length)];
@@ -30,7 +44,7 @@ function getAIReply(userText: string, lastMoodId?: string | null): string {
   return DEFAULT_AI_RESPONSES[Math.floor(Math.random() * DEFAULT_AI_RESPONSES.length)];
 }
 
-export default function AIChatScreen({ onNavigate, initialMoodId }: Props) {
+export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const saved = getChatMessages();
     return saved.length > 0 ? saved : [INITIAL_MSG];
@@ -61,7 +75,7 @@ export default function AIChatScreen({ onNavigate, initialMoodId }: Props) {
 
     const delay = 800 + Math.random() * 1000;
     setTimeout(() => {
-      const reply = getAIReply(text, initialMoodId);
+      const reply = getAIReply(text, ageGroup, initialMoodId);
       const aiMsg: ChatMessage = {
         id: generateId(),
         role: 'ai',
