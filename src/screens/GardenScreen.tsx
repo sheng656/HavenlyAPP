@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Screen, Pet, Plant, AgeGroup } from '../types';
-import { getPets, savePets, getPlants, savePlants, getCoins, spendCoins } from '../utils/storage';
+import { getPets, savePets, getPlants, savePlants, getCoins, spendCoins, getStreak } from '../utils/storage';
 import styles from './GardenScreen.module.css';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 const PLANT_STAGES = ['🌱', '🌿', '🪴', '🌸', '🌻'];
 const UNLOCK_COST = 50;
 
-export default function GardenScreen({ onNavigate, ageGroup }: Props) {
+export default function GardenScreen({ onNavigate }: Props) {
   const [tab, setTab] = useState<'pets' | 'plants'>('pets');
   const [pets, setPets] = useState<Pet[]>(getPets);
   const [plants, setPlants] = useState<Plant[]>(getPlants);
@@ -19,6 +19,7 @@ export default function GardenScreen({ onNavigate, ageGroup }: Props) {
   const [feedAnim, setFeedAnim] = useState<string | null>(null);
   const [waterAnim, setWaterAnim] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const streak = getStreak();
 
   const showMessage = (msg: string) => {
     setMessage(msg);
@@ -195,6 +196,9 @@ export default function GardenScreen({ onNavigate, ageGroup }: Props) {
       )}
 
       <div className={styles.hint}>
+        {streak.count > 0 && (
+          <p>🔥 连续记录 {streak.count} 天！每次记录心情都会自动浇水 💧 +{Math.min(20, 5 + Math.min(streak.count - 1, 7) * 2)}%</p>
+        )}
         <p>💡 每次记录心情可获得 10🪙 · 快乐币可用于解锁和养护</p>
       </div>
     </div>

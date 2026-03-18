@@ -1,4 +1,4 @@
-import { AgeGroup } from '../types';
+import type { AgeGroup } from '../types';
 import styles from './AgeSwitcher.module.css';
 
 interface Props {

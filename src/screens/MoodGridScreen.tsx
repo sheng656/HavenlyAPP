@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Screen, MoodId, AgeGroup } from '../types';
 import { MOODS } from '../utils/moodData';
-import { saveMoodEntry, addCoins, generateId } from '../utils/storage';
+import { saveMoodEntry, addCoins, generateId, onMoodLogged } from '../utils/storage';
 import styles from './MoodGridScreen.module.css';
 
 interface Props {
@@ -39,6 +39,7 @@ export default function MoodGridScreen({ onNavigate, onMoodSaved, ageGroup }: Pr
       intensity: selectedMood?.intensity ?? 3,
     });
     addCoins(10);
+    onMoodLogged(); // update streak and apply garden auto-bonus
     onMoodSaved?.(selectedMoodId);
     setStep('done');
   };

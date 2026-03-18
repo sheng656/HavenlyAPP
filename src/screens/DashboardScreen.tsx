@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import type { Screen, AgeGroup } from '../types';
-import { getMoodEntries, getMoodEntriesLast7Days, getMoodEntriesLast30Days } from '../utils/storage';
+import { getMoodEntries, getMoodEntriesLast7Days, getMoodEntriesLast30Days, getStreak } from '../utils/storage';
 import { getMoodById } from '../utils/moodData';
 import styles from './DashboardScreen.module.css';
 
@@ -12,13 +12,41 @@ interface Props {
 type Period = '7' | '30' | 'all';
 
 export default function DashboardScreen({ onNavigate, ageGroup }: Props) {
-  const [period, setPeriod] = useState<Period>(ageGroup === 'toddler' ? '7' : '7');
+  const [period, setPeriod] = useState<Period>('7');
+  const streak = getStreak();
 
   const entries = useMemo(() => {
     if (period === '7') return getMoodEntriesLast7Days();
     if (period === '30') return getMoodEntriesLast30Days();
     return getMoodEntries();
   }, [period]);
+
+  // 7-day calendar: always shows the last 7 calendar days
+  const weekCalendar = useMemo(() => {
+    const allEntries = getMoodEntries();
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      const dayStart = new Date(d);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(d);
+      dayEnd.setHours(23, 59, 59, 999);
+      const dayEntries = allEntries.filter(
+        (e) => e.timestamp >= dayStart.getTime() && e.timestamp <= dayEnd.getTime(),
+      );
+      // Show the most recent mood emoji for that day (if any)
+      const topEntry = dayEntries[0];
+      const topMood = topEntry ? getMoodById(topEntry.moodId) : null;
+      return {
+        dayLabel: ['日', '一', '二', '三', '四', '五', '六'][d.getDay()],
+        date: d.getDate(),
+        emoji: topMood?.emoji ?? null,
+        color: topMood?.color ?? null,
+        count: dayEntries.length,
+        isToday: i === 6,
+      };
+    });
+  }, []);
 
   const moodCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -68,6 +96,26 @@ export default function DashboardScreen({ onNavigate, ageGroup }: Props) {
         ))}
       </div>
 
+      {/* 7-day Mood Calendar */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>近 7 天心情日历</h2>
+        <div className={styles.calendar}>
+          {weekCalendar.map((day, idx) => (
+            <div key={idx} className={`${styles.calDay} ${day.isToday ? styles.calToday : ''}`}>
+              <div className={styles.calDayLabel}>周{day.dayLabel}</div>
+              <div
+                className={styles.calDayCell}
+                style={day.color ? { background: `${day.color}40`, borderColor: day.color } : {}}
+                title={day.count > 0 ? `${day.count} 条记录` : '暂无记录'}
+              >
+                {day.emoji ?? <span className={styles.calEmpty}>·</span>}
+              </div>
+              <div className={styles.calDate}>{day.date}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {totalEntries === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyEmoji}>📊</div>
@@ -79,6 +127,18 @@ export default function DashboardScreen({ onNavigate, ageGroup }: Props) {
         </div>
       ) : (
         <>
+          {/* Streak + Summary Cards */}
+          {streak.count > 0 && (
+            <div className={styles.section}>
+              <div className={styles.streakCard}>
+                <span className={styles.streakFlame}>🔥</span>
+                <div>
+                  <div className={styles.streakNum}>{streak.count} 天</div>
+                  <div className={styles.streakLabel}>连续记录</div>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Summary Cards */}
           <div className={styles.summaryGrid}>
             <div className={styles.summaryCard}>
