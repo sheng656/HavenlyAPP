@@ -144,7 +144,7 @@
 }
 
 .footer {
-  margin-top: 32px;
+  margin-top: 20px;
   z-index: 1;
 }
 
@@ -155,4 +155,73 @@
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 500;
+}
+
+/* Quick Chat Widget */
+.chatWidget {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: white;
+  border-radius: 20px;
+  padding: 14px 16px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  margin-top: 16px;
+  z-index: 1;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chatWidget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.13);
+}
+
+.chatWidget:active {
+  transform: scale(0.98);
+}
+
+.chatWidgetAvatar {
+  font-size: 40px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.chatWidgetBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.chatWidgetName {
+  font-size: 12px;
+  font-weight: 700;
+  color: #5a8fba;
+  margin-bottom: 2px;
+}
+
+.chatWidgetMsg {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chatWidgetMood {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+.chatWidgetArrow {
+  font-size: 22px;
+  color: #ccc;
+  font-weight: 300;
+  flex-shrink: 0;
 }

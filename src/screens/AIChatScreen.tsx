@@ -1,17 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import type { Screen, ChatMessage } from '../types';
-import {
-  AI_RESPONSES,
-  DEFAULT_AI_RESPONSES,
-  CRISIS_RESPONSE,
-  isCrisisMessage,
-} from '../utils/moodData';
+import type { Screen, ChatMessage, AgeGroup } from '../types';
+import { getAIResponse } from '../utils/aiService';
 import { getChatMessages, saveChatMessage, generateId } from '../utils/storage';
 import styles from './AIChatScreen.module.css';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
   initialMoodId?: string | null;
+  ageGroup: AgeGroup;
 }
 
 const INITIAL_MSG: ChatMessage = {
@@ -21,16 +17,10 @@ const INITIAL_MSG: ChatMessage = {
   timestamp: Date.now(),
 };
 
-function getAIReply(userText: string, lastMoodId?: string | null): string {
-  if (isCrisisMessage(userText)) return CRISIS_RESPONSE;
-  if (lastMoodId && AI_RESPONSES[lastMoodId]) {
-    const arr = AI_RESPONSES[lastMoodId];
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-  return DEFAULT_AI_RESPONSES[Math.floor(Math.random() * DEFAULT_AI_RESPONSES.length)];
-}
+/** Minimum visible "typing" delay in ms so the reply doesn't feel instant. */
+const MIN_REPLY_DELAY = 800;
 
-export default function AIChatScreen({ onNavigate, initialMoodId }: Props) {
+export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const saved = getChatMessages();
     return saved.length > 0 ? saved : [INITIAL_MSG];
@@ -43,9 +33,9 @@ export default function AIChatScreen({ onNavigate, initialMoodId }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const text = input.trim();
-    if (!text) return;
+    if (!text || isTyping) return;
 
     const userMsg: ChatMessage = {
       id: generateId(),
@@ -59,19 +49,21 @@ export default function AIChatScreen({ onNavigate, initialMoodId }: Props) {
     setInput('');
     setIsTyping(true);
 
-    const delay = 800 + Math.random() * 1000;
-    setTimeout(() => {
-      const reply = getAIReply(text, initialMoodId);
-      const aiMsg: ChatMessage = {
-        id: generateId(),
-        role: 'ai',
-        content: reply,
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev, aiMsg]);
-      saveChatMessage(aiMsg);
-      setIsTyping(false);
-    }, delay);
+    // Run AI call and minimum delay in parallel; whichever takes longer wins
+    const [reply] = await Promise.all([
+      getAIResponse(text, ageGroup, initialMoodId, messages),
+      new Promise<void>((res) => setTimeout(res, MIN_REPLY_DELAY)),
+    ]);
+
+    const aiMsg: ChatMessage = {
+      id: generateId(),
+      role: 'ai',
+      content: reply,
+      timestamp: Date.now(),
+    };
+    setMessages((prev) => [...prev, aiMsg]);
+    saveChatMessage(aiMsg);
+    setIsTyping(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -102,12 +94,21 @@ export default function AIChatScreen({ onNavigate, initialMoodId }: Props) {
             className={`${styles.bubble} ${msg.role === 'user' ? styles.bubbleUser : styles.bubbleAi}`}
           >
             {msg.role === 'ai' && <span className={styles.aiAvatar}>🐧</span>}
-            <div
-              className={styles.bubbleText}
-              dangerouslySetInnerHTML={{
-                __html: msg.content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'),
-              }}
-            />
+            <div className={styles.bubbleText}>
+              {msg.role === 'user' ? (
+                msg.content
+              ) : (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: msg.content
+                      .replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'),
+                  }}
+                />
+              )}
+            </div>
           </div>
         ))}
 

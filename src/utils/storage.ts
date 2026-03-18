@@ -6,6 +6,66 @@ const STORAGE_KEYS = {
   PETS: 'havenly_pets',
   PLANTS: 'havenly_plants',
   COINS: 'havenly_coins',
+  STREAK: 'havenly_streak',
+};
+
+interface Streak {
+  count: number;
+  lastDate: string; // YYYY-MM-DD
+}
+
+const getTodayDate = (): string => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+export const getStreak = (): Streak => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.STREAK);
+    return raw ? (JSON.parse(raw) as Streak) : { count: 0, lastDate: '' };
+  } catch {
+    return { count: 0, lastDate: '' };
+  }
+};
+
+const updateStreak = (): number => {
+  const today = getTodayDate();
+  const streak = getStreak();
+  if (streak.lastDate === today) return streak.count; // already logged today
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+  const newCount = streak.lastDate === yesterdayStr ? streak.count + 1 : 1;
+  localStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify({ count: newCount, lastDate: today }));
+  return newCount;
+};
+
+const applyMoodBonusToGarden = (streakCount: number): void => {
+  // Auto-water plants: base 5 points, +2 per consecutive streak day (max 20)
+  const waterBonus = Math.min(20, 5 + Math.min(streakCount - 1, 7) * 2);
+  const plants = getPlants();
+  const updatedPlants = plants.map((pl) => {
+    if (!pl.unlocked) return pl;
+    const newWater = Math.min(100, pl.waterLevel + waterBonus);
+    const newStage = Math.min(4, Math.floor(newWater / 25));
+    return { ...pl, waterLevel: newWater, stage: newStage };
+  });
+  savePlants(updatedPlants);
+
+  // Boost pet happiness by 5 per mood log
+  const pets = getPets();
+  const updatedPets = pets.map((p) =>
+    p.unlocked ? { ...p, happiness: Math.min(100, p.happiness + 5) } : p
+  );
+  savePets(updatedPets);
+};
+
+/** Call this after every successful mood entry save to apply streak and garden bonus. */
+export const onMoodLogged = (): void => {
+  const newStreak = updateStreak();
+  applyMoodBonusToGarden(newStreak);
 };
 
 // Mood Entries

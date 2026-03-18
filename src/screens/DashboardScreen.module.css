@@ -259,3 +259,82 @@
   color: #5a3a8a;
   line-height: 1.6;
 }
+
+/* 7-day mood calendar */
+.calendar {
+  background: white;
+  border-radius: 16px;
+  padding: 14px 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+  display: flex;
+  justify-content: space-around;
+  gap: 4px;
+}
+
+.calDay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.calToday .calDayLabel {
+  color: #b078e0;
+  font-weight: 800;
+}
+
+.calDayLabel {
+  font-size: 11px;
+  color: #aaa;
+  font-weight: 600;
+}
+
+.calDayCell {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1.5px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: #f8f8f8;
+}
+
+.calEmpty {
+  font-size: 18px;
+  color: #d0d0d0;
+}
+
+.calDate {
+  font-size: 11px;
+  color: #bbb;
+}
+
+/* Streak card */
+.streakCard {
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+}
+
+.streakFlame {
+  font-size: 36px;
+}
+
+.streakNum {
+  font-size: 24px;
+  font-weight: 800;
+  color: #e65c00;
+}
+
+.streakLabel {
+  font-size: 12px;
+  color: #a05000;
+  margin-top: 2px;
+}

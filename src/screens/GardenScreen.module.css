@@ -217,6 +217,23 @@
   cursor: pointer;
 }
 
+.encyclopediaBtn {
+  width: 100%;
+  padding: 7px;
+  background: transparent;
+  color: #5a3a8a;
+  border: 1.5px solid #d4a8f0;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.encyclopediaBtn:hover {
+  background: #f5eeff;
+}
+
 .hint {
   text-align: center;
   padding: 8px 16px;
