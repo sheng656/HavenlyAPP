@@ -12,7 +12,7 @@ interface Props {
 type Period = '7' | '30' | 'all';
 
 export default function DashboardScreen({ onNavigate, ageGroup }: Props) {
-  const [period, setPeriod] = useState<Period>('7');
+  const [period, setPeriod] = useState<Period>(ageGroup === 'toddler' ? '7' : '7');
 
   const entries = useMemo(() => {
     if (period === '7') return getMoodEntriesLast7Days();
@@ -148,16 +148,35 @@ export default function DashboardScreen({ onNavigate, ageGroup }: Props) {
             </div>
           </div>
 
-          {/* Insight */}
+          {/* Insight - Age-specific */}
           <div className={styles.section}>
             <div className={styles.insightCard}>
-              <div className={styles.insightEmoji}>💡</div>
+              <div className={styles.insightEmoji}>
+                {ageGroup === 'toddler' ? '🎈' : ageGroup === 'teen' ? '📖' : '💡'}
+              </div>
               <div className={styles.insightText}>
-                {positivePercent >= 60
-                  ? `太棒了！在所选时段内，有 ${positivePercent}% 的时间你保持了积极的情绪状态。继续保持！`
-                  : positivePercent >= 40
-                  ? `在所选时段内积极情绪占 ${positivePercent}%。情绪有些波动，这很正常。记得多和岛岛聊聊哦 💙`
-                  : `我注意到这段时间积极情绪较少（${positivePercent}%）。如果感到持续的压力，请告知信任的大人或咨询老师 💙`}
+                {ageGroup === 'toddler' ? (
+                  // Toddler: Simple, playful insights
+                  positivePercent >= 60
+                    ? `太棒了！你笑得很开心呢！${positivePercent}% 都是开心时刻 😊`
+                    : positivePercent >= 40
+                    ? `你有开心的时候，也有难过的时候，这都很正常呀 🤗`
+                    : `最近有点伤心呢？和岛岛聊聊天吧，我们一起加油 💙`
+                ) : ageGroup === 'teen' ? (
+                  // Teen: Detailed, reflective insights
+                  positivePercent >= 60
+                    ? `亮眼的数据！你的积极情绪占比达到 ${positivePercent}%。这反映了纷繁生活中你仍然保持的乐观态度。继续保持这种心态，好事会继续发生。`
+                    : positivePercent >= 40
+                    ? `你的情绪在 ${positivePercent}% 的积极水平。这说明你在经历一些变化。建议你在日记中记录一下最近发生的事情和你的想法，这会帮你更好地理解自己。`
+                    : `最近的情绪数据显示你可能经历了一些挑战。${positivePercent}% 的积极情绪率提示你可能需要更多的自我关怀。记得和信任的人倾诉，或考虑记录更多的想法。`
+                ) : (
+                  // Kid: Balanced, encouraging insights
+                  positivePercent >= 60
+                    ? `太棒了！在所选时段内，有 ${positivePercent}% 的时间你保持了积极的情绪状态。继续保持！`
+                    : positivePercent >= 40
+                    ? `在所选时段内积极情绪占 ${positivePercent}%。情绪有些波动，这很正常。记得多和岛岛聊聊哦 💙`
+                    : `我注意到这段时间积极情绪较少（${positivePercent}%）。如果感到持续的压力，请告知信任的大人或咨询老师 💙`
+                )}
               </div>
             </div>
           </div>

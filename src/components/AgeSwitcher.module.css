@@ -35,13 +35,13 @@
 }
 
 .active.toddler {
-  color: #FF9F43; /* Orange for warmth */
+  color: #ff9f43; /* Orange for warmth */
 }
 
 .active.kid {
-  color: #54A0FF; /* Blue for calm/play */
+  color: #54a0ff; /* Blue for calm/play */
 }
 
 .active.teen {
-  color: #5F27CD; /* Purple for depth */
+  color: #5f27cd; /* Purple for depth */
 }
