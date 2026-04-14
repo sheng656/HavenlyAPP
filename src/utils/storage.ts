@@ -1,4 +1,5 @@
 import type { MoodEntry, ChatMessage, Pet, Plant } from '../types';
+import { queueCloudSyncFromLocal } from './cloudSync';
 
 const STORAGE_KEYS = {
   MOOD_ENTRIES: 'havenly_mood_entries',
@@ -13,6 +14,17 @@ interface Streak {
   count: number;
   lastDate: string; // YYYY-MM-DD
 }
+
+let syncTimer: ReturnType<typeof setTimeout> | null = null;
+
+const scheduleCloudSync = (): void => {
+  if (syncTimer) {
+    clearTimeout(syncTimer);
+  }
+  syncTimer = setTimeout(() => {
+    queueCloudSyncFromLocal();
+  }, 250);
+};
 
 const getTodayDate = (): string => {
   const d = new Date();
@@ -39,6 +51,7 @@ const updateStreak = (): number => {
 
   const newCount = streak.lastDate === yesterdayStr ? streak.count + 1 : 1;
   localStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify({ count: newCount, lastDate: today }));
+  scheduleCloudSync();
   return newCount;
 };
 
@@ -76,6 +89,7 @@ export const saveMoodEntry = (entry: MoodEntry): void => {
   const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
   const filtered = entries.filter((e) => e.timestamp > cutoff);
   localStorage.setItem(STORAGE_KEYS.MOOD_ENTRIES, JSON.stringify(filtered));
+  scheduleCloudSync();
 };
 
 export const getMoodEntries = (): MoodEntry[] => {
@@ -104,6 +118,7 @@ export const saveChatMessage = (msg: ChatMessage): void => {
   // Keep last 200 messages
   const trimmed = messages.slice(-200);
   localStorage.setItem(STORAGE_KEYS.CHAT_MESSAGES, JSON.stringify(trimmed));
+  scheduleCloudSync();
 };
 
 export const getChatMessages = (): ChatMessage[] => {
@@ -117,6 +132,7 @@ export const getChatMessages = (): ChatMessage[] => {
 
 export const clearChatMessages = (): void => {
   localStorage.removeItem(STORAGE_KEYS.CHAT_MESSAGES);
+  scheduleCloudSync();
 };
 
 // Coins
@@ -127,12 +143,14 @@ export const getCoins = (): number => {
 export const addCoins = (amount: number): void => {
   const current = getCoins();
   localStorage.setItem(STORAGE_KEYS.COINS, String(current + amount));
+  scheduleCloudSync();
 };
 
 export const spendCoins = (amount: number): boolean => {
   const current = getCoins();
   if (current < amount) return false;
   localStorage.setItem(STORAGE_KEYS.COINS, String(current - amount));
+  scheduleCloudSync();
   return true;
 };
 
@@ -155,6 +173,7 @@ export const getPets = (): Pet[] => {
 
 export const savePets = (pets: Pet[]): void => {
   localStorage.setItem(STORAGE_KEYS.PETS, JSON.stringify(pets));
+  scheduleCloudSync();
 };
 
 // Plants
@@ -176,6 +195,7 @@ export const getPlants = (): Plant[] => {
 
 export const savePlants = (plants: Plant[]): void => {
   localStorage.setItem(STORAGE_KEYS.PLANTS, JSON.stringify(plants));
+  scheduleCloudSync();
 };
 
 // Generate ID
