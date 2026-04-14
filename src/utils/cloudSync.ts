@@ -1,5 +1,5 @@
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { getFirebaseDb, isCloudSyncEnabled } from './firebase';
+import { getFirebaseDb, isCloudSyncEnabled, resolveCloudProfileId } from './firebase';
 
 const STORAGE_KEYS = {
   MOOD_ENTRIES: 'havenly_mood_entries',
@@ -9,6 +9,7 @@ const STORAGE_KEYS = {
   COINS: 'havenly_coins',
   STREAK: 'havenly_streak',
   DEVICE_ID: 'havenly_device_id',
+  CLOUD_PROFILE_ID: 'havenly_cloud_profile_id',
 };
 
 interface Streak {
@@ -44,6 +45,18 @@ const getOrCreateDeviceId = (): string => {
   const id = Math.random().toString(36).slice(2) + Date.now().toString(36);
   localStorage.setItem(STORAGE_KEYS.DEVICE_ID, id);
   return id;
+};
+
+const getFallbackProfileId = (): string => `device_${getOrCreateDeviceId()}`;
+
+const getOrCreateCloudProfileId = async (): Promise<string> => {
+  const existing = localStorage.getItem(STORAGE_KEYS.CLOUD_PROFILE_ID);
+  if (existing) return existing;
+
+  const uid = await resolveCloudProfileId();
+  const profileId = uid ? `uid_${uid}` : getFallbackProfileId();
+  localStorage.setItem(STORAGE_KEYS.CLOUD_PROFILE_ID, profileId);
+  return profileId;
 };
 
 const getSnapshotFromLocalStorage = (): StorageSnapshot => ({
@@ -84,15 +97,15 @@ export const queueCloudSyncFromLocal = (): void => {
   const db = getFirebaseDb();
   if (!db) return;
 
-  const deviceId = getOrCreateDeviceId();
-  const snapshot = getSnapshotFromLocalStorage();
-
   syncQueue = syncQueue
     .then(async () => {
+      const profileId = await getOrCreateCloudProfileId();
+      const snapshot = getSnapshotFromLocalStorage();
       await setDoc(
-        doc(db, 'havenly_profiles', deviceId),
+        doc(db, 'havenly_profiles', profileId),
         {
           ...snapshot,
+          profileId,
           updatedAt: serverTimestamp(),
         },
         { merge: true }
@@ -111,8 +124,8 @@ export const hydrateLocalStorageFromCloud = async (): Promise<boolean> => {
   if (!db) return false;
 
   try {
-    const deviceId = getOrCreateDeviceId();
-    const snapshotDoc = await getDoc(doc(db, 'havenly_profiles', deviceId));
+    const profileId = await getOrCreateCloudProfileId();
+    const snapshotDoc = await getDoc(doc(db, 'havenly_profiles', profileId));
     if (!snapshotDoc.exists()) return false;
 
     const data = snapshotDoc.data() as CloudSnapshot;

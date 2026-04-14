@@ -1,4 +1,11 @@
 import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
+import {
+  browserLocalPersistence,
+  getAuth,
+  setPersistence,
+  signInAnonymously,
+  type Auth,
+} from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -24,6 +31,8 @@ export const isCloudSyncEnabled =
 
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
+let auth: Auth | null = null;
+let authBootstrapPromise: Promise<void> | null = null;
 
 const ensureApp = (): FirebaseApp | null => {
   if (!isFirebaseConfigured) return null;
@@ -39,4 +48,41 @@ export const getFirebaseDb = (): Firestore | null => {
   if (!firebaseApp) return null;
   db = getFirestore(firebaseApp);
   return db;
+};
+
+export const getFirebaseAuth = (): Auth | null => {
+  if (!isCloudSyncEnabled) return null;
+  if (auth) return auth;
+  const firebaseApp = ensureApp();
+  if (!firebaseApp) return null;
+  auth = getAuth(firebaseApp);
+  return auth;
+};
+
+const bootstrapAnonymousAuth = async (firebaseAuth: Auth): Promise<void> => {
+  if (authBootstrapPromise) return authBootstrapPromise;
+
+  authBootstrapPromise = (async () => {
+    try {
+      await setPersistence(firebaseAuth, browserLocalPersistence);
+      if (!firebaseAuth.currentUser) {
+        await signInAnonymously(firebaseAuth);
+      }
+    } catch (error: unknown) {
+      console.warn(
+        '[Firebase] Anonymous sign-in failed. Ensure Anonymous provider is enabled in Firebase Auth.',
+        error
+      );
+    }
+  })();
+
+  await authBootstrapPromise;
+};
+
+export const resolveCloudProfileId = async (): Promise<string | null> => {
+  const firebaseAuth = getFirebaseAuth();
+  if (!firebaseAuth) return null;
+
+  await bootstrapAnonymousAuth(firebaseAuth);
+  return firebaseAuth.currentUser?.uid ?? null;
 };

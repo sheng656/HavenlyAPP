@@ -59,6 +59,10 @@ Currently, two official plugins are available:
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
+## Firebase Setup (Havenly)
+
+For the web app cloud-sync configuration, see [FIREBASE_SETUP.md](./FIREBASE_SETUP.md).
+
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
