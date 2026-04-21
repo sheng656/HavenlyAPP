@@ -1,18 +1,20 @@
 import { useState } from 'react';
-import type { Screen, Pet, Plant, AgeGroup } from '../types';
+import type { Screen, Pet, Plant, AgeGroup, Language } from '../types';
 import { getPets, savePets, getPlants, savePlants, getCoins, spendCoins, getStreak } from '../utils/storage';
 import SpeciesCard from '../components/SpeciesCard';
+import { SPECIES_DATA } from '../utils/speciesData';
 import styles from './GardenScreen.module.css';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
   ageGroup: AgeGroup;
+  language: Language;
 }
 
 const PLANT_STAGES = ['🌱', '🌿', '🪴', '🌸', '🌻'];
 const UNLOCK_COST = 50;
 
-export default function GardenScreen({ onNavigate }: Props) {
+export default function GardenScreen({ onNavigate, language }: Props) {
   const [tab, setTab] = useState<'pets' | 'plants'>('pets');
   const [pets, setPets] = useState<Pet[]>(getPets);
   const [plants, setPlants] = useState<Plant[]>(getPlants);
@@ -22,6 +24,40 @@ export default function GardenScreen({ onNavigate }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [speciesCardId, setSpeciesCardId] = useState<string | null>(null);
   const streak = getStreak();
+  const isZh = language === 'zh';
+
+  const t = {
+    noCoins: isZh ? '快乐币不足 😢' : 'Not enough joy coins 😢',
+    needCoins: (amount: number) => (isZh ? `需要 ${amount} 快乐币 🪙` : `${amount} joy coins needed 🪙`),
+    feedSuccess: isZh ? '喂食成功！🍎 -5🪙' : 'Fed successfully! 🍎 -5🪙',
+    unlockPet: isZh ? '新伙伴解锁啦！🎉' : 'New buddy unlocked! 🎉',
+    waterSuccess: isZh ? '浇水成功！💧 -3🪙' : 'Watered successfully! 💧 -3🪙',
+    unlockPlant: isZh ? '新植物解锁啦！🌱' : 'New plant unlocked! 🌱',
+    back: isZh ? '← 返回' : '← Back',
+    title: isZh ? '我的小花园' : 'My Garden',
+    petsTab: isZh ? '🐾 宠物伙伴' : '🐾 Pet Buddies',
+    plantsTab: isZh ? '🌱 我的植物' : '🌱 My Plants',
+    happiness: isZh ? '开心度' : 'Happiness',
+    water: isZh ? '水分' : 'Water',
+    feedBtn: isZh ? '喂食 🍎 (-5🪙)' : 'Feed 🍎 (-5🪙)',
+    waterBtn: isZh ? '浇水 💧 (-3🪙)' : 'Water 💧 (-3🪙)',
+    encyclopedia: isZh ? '📖 百科' : '📖 Info',
+    unlock: isZh ? '解锁' : 'Unlock',
+    stage: isZh ? '阶段' : 'Stage',
+    streakHint: (count: number, bonus: number) =>
+      isZh
+        ? `🔥 连续记录 ${count} 天！每次记录心情都会自动浇水 💧 +${bonus}%`
+        : `🔥 ${count}-day streak! Each mood log auto-waters plants 💧 +${bonus}%`,
+    coinsHint: isZh
+      ? '💡 每次记录心情可获得 10🪙 · 快乐币可用于解锁和养护'
+      : '💡 Each mood log gives 10🪙 · Use joy coins to unlock and care',
+  };
+
+  const getSpeciesName = (id: string, fallbackName: string): string => {
+    const species = SPECIES_DATA[id];
+    if (!species) return fallbackName;
+    return isZh ? species.name : species.nameEn;
+  };
 
   const showMessage = (msg: string) => {
     setMessage(msg);
@@ -30,7 +66,7 @@ export default function GardenScreen({ onNavigate }: Props) {
 
   const handleFeed = (petId: string) => {
     if (!spendCoins(5)) {
-      showMessage('快乐币不足 😢');
+      showMessage(t.noCoins);
       return;
     }
     const updated = pets.map((p) =>
@@ -42,13 +78,13 @@ export default function GardenScreen({ onNavigate }: Props) {
     savePets(updated);
     setCoins(getCoins());
     setFeedAnim(petId);
-    showMessage('喂食成功！🍎 -5🪙');
+    showMessage(t.feedSuccess);
     setTimeout(() => setFeedAnim(null), 600);
   };
 
   const handleUnlockPet = (petId: string) => {
     if (!spendCoins(UNLOCK_COST)) {
-      showMessage(`需要 ${UNLOCK_COST} 快乐币 🪙`);
+      showMessage(t.needCoins(UNLOCK_COST));
       return;
     }
     const updated = pets.map((p) =>
@@ -57,12 +93,12 @@ export default function GardenScreen({ onNavigate }: Props) {
     setPets(updated);
     savePets(updated);
     setCoins(getCoins());
-    showMessage('新伙伴解锁啦！🎉');
+    showMessage(t.unlockPet);
   };
 
   const handleWater = (plantId: string) => {
     if (!spendCoins(3)) {
-      showMessage('快乐币不足 😢');
+      showMessage(t.noCoins);
       return;
     }
     const updated = plants.map((pl) => {
@@ -75,13 +111,13 @@ export default function GardenScreen({ onNavigate }: Props) {
     savePlants(updated);
     setCoins(getCoins());
     setWaterAnim(plantId);
-    showMessage('浇水成功！💧 -3🪙');
+    showMessage(t.waterSuccess);
     setTimeout(() => setWaterAnim(null), 600);
   };
 
   const handleUnlockPlant = (plantId: string) => {
     if (!spendCoins(UNLOCK_COST)) {
-      showMessage(`需要 ${UNLOCK_COST} 快乐币 🪙`);
+      showMessage(t.needCoins(UNLOCK_COST));
       return;
     }
     const updated = plants.map((pl) =>
@@ -90,14 +126,14 @@ export default function GardenScreen({ onNavigate }: Props) {
     setPlants(updated);
     savePlants(updated);
     setCoins(getCoins());
-    showMessage('新植物解锁啦！🌱');
+    showMessage(t.unlockPlant);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <button className={styles.back} onClick={() => onNavigate('home')}>← 返回</button>
-        <h1 className={styles.title}>我的小花园</h1>
+        <button className={styles.back} onClick={() => onNavigate('home')}>{t.back}</button>
+        <h1 className={styles.title}>{t.title}</h1>
         <div className={styles.coinsBadge}>🪙 {coins}</div>
       </div>
 
@@ -108,13 +144,13 @@ export default function GardenScreen({ onNavigate }: Props) {
           className={`${styles.tab} ${tab === 'pets' ? styles.tabActive : ''}`}
           onClick={() => setTab('pets')}
         >
-          🐾 宠物伙伴
+          {t.petsTab}
         </button>
         <button
           className={`${styles.tab} ${tab === 'plants' ? styles.tabActive : ''}`}
           onClick={() => setTab('plants')}
         >
-          🌱 我的植物
+          {t.plantsTab}
         </button>
       </div>
 
@@ -133,7 +169,7 @@ export default function GardenScreen({ onNavigate }: Props) {
               >
                 {pet.emoji}
               </div>
-              <div className={styles.cardName}>{pet.name}</div>
+              <div className={styles.cardName}>{getSpeciesName(pet.id, pet.name)}</div>
               {pet.unlocked && (
                 <>
                   <div className={styles.happinessBar}>
@@ -142,18 +178,18 @@ export default function GardenScreen({ onNavigate }: Props) {
                       style={{ width: `${pet.happiness}%` }}
                     />
                   </div>
-                  <div className={styles.happinessLabel}>开心度 {pet.happiness}%</div>
+                  <div className={styles.happinessLabel}>{t.happiness} {pet.happiness}%</div>
                   <button
                     className={styles.actionBtn}
                     onClick={(e) => { e.stopPropagation(); handleFeed(pet.id); }}
                   >
-                    喂食 🍎 (-5🪙)
+                    {t.feedBtn}
                   </button>
                   <button
                     className={styles.encyclopediaBtn}
                     onClick={(e) => { e.stopPropagation(); setSpeciesCardId(pet.id); }}
                   >
-                    📖 百科
+                    {t.encyclopedia}
                   </button>
                 </>
               )}
@@ -162,7 +198,7 @@ export default function GardenScreen({ onNavigate }: Props) {
                   className={styles.unlockBtn}
                   onClick={() => handleUnlockPet(pet.id)}
                 >
-                  解锁 ({UNLOCK_COST}🪙)
+                  {t.unlock} ({UNLOCK_COST}🪙)
                 </button>
               )}
             </div>
@@ -185,11 +221,11 @@ export default function GardenScreen({ onNavigate }: Props) {
               >
                 {plant.unlocked ? PLANT_STAGES[plant.stage] : plant.emoji}
               </div>
-              <div className={styles.cardName}>{plant.name}</div>
+              <div className={styles.cardName}>{getSpeciesName(plant.id, plant.name)}</div>
               {plant.unlocked && (
                 <>
                   <div className={styles.stageLabel}>
-                    {'🌱🌿🪴🌸🌻'[plant.stage]} 阶段 {plant.stage + 1}/5
+                    {'🌱🌿🪴🌸🌻'[plant.stage]} {t.stage} {plant.stage + 1}/5
                   </div>
                   <div className={styles.happinessBar}>
                     <div
@@ -197,18 +233,18 @@ export default function GardenScreen({ onNavigate }: Props) {
                       style={{ width: `${plant.waterLevel}%` }}
                     />
                   </div>
-                  <div className={styles.happinessLabel}>水分 {plant.waterLevel}%</div>
+                  <div className={styles.happinessLabel}>{t.water} {plant.waterLevel}%</div>
                   <button
                     className={styles.actionBtn}
                     onClick={(e) => { e.stopPropagation(); handleWater(plant.id); }}
                   >
-                    浇水 💧 (-3🪙)
+                    {t.waterBtn}
                   </button>
                   <button
                     className={styles.encyclopediaBtn}
                     onClick={(e) => { e.stopPropagation(); setSpeciesCardId(plant.id); }}
                   >
-                    📖 百科
+                    {t.encyclopedia}
                   </button>
                 </>
               )}
@@ -217,7 +253,7 @@ export default function GardenScreen({ onNavigate }: Props) {
                   className={styles.unlockBtn}
                   onClick={() => handleUnlockPlant(plant.id)}
                 >
-                  解锁 ({UNLOCK_COST}🪙)
+                  {t.unlock} ({UNLOCK_COST}🪙)
                 </button>
               )}
             </div>
@@ -227,15 +263,16 @@ export default function GardenScreen({ onNavigate }: Props) {
 
       <div className={styles.hint}>
         {streak.count > 0 && (
-          <p>🔥 连续记录 {streak.count} 天！每次记录心情都会自动浇水 💧 +{Math.min(20, 5 + Math.min(streak.count - 1, 7) * 2)}%</p>
+          <p>{t.streakHint(streak.count, Math.min(20, 5 + Math.min(streak.count - 1, 7) * 2))}</p>
         )}
-        <p>💡 每次记录心情可获得 10🪙 · 快乐币可用于解锁和养护</p>
+        <p>{t.coinsHint}</p>
       </div>
 
       {speciesCardId && (
         <SpeciesCard
           speciesId={speciesCardId}
           onClose={() => setSpeciesCardId(null)}
+          language={language}
         />
       )}
     </div>

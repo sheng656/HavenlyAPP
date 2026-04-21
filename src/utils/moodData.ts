@@ -1,4 +1,4 @@
-import type { Mood, MoodId } from '../types';
+import type { Mood, MoodId, Language } from '../types';
 
 export const MOODS: Mood[] = [
   { id: 'happy', emoji: '😊', label: '开心', labelEn: 'Happy', color: '#FFD93D', intensity: 4 },
@@ -16,6 +16,9 @@ export const MOODS: Mood[] = [
 export const getMoodById = (id: MoodId): Mood | undefined =>
   MOODS.find((m) => m.id === id);
 
+export const getMoodLabel = (mood: Mood, language: Language): string =>
+  language === 'zh' ? mood.label : mood.labelEn;
+
 export const getPositiveMoods = (): Mood[] =>
   MOODS.filter((m) => ['happy', 'excited', 'calm', 'loved'].includes(m.id));
 
@@ -30,7 +33,7 @@ export const CRISIS_KEYWORDS = [
 export const isCrisisMessage = (text: string): boolean =>
   CRISIS_KEYWORDS.some((kw) => text.toLowerCase().includes(kw.toLowerCase()));
 
-export const AI_RESPONSES: Record<string, string[]> = {
+export const AI_RESPONSES_ZH: Record<string, string[]> = {
   happy: [
     '真棒！听到你今天很开心，我也替你高兴 😊 能告诉我是什么让你这么开心吗？',
     '太好了！开心的感觉真的很美好。继续保持这种好心情吧！',
@@ -73,12 +76,55 @@ export const AI_RESPONSES: Record<string, string[]> = {
   ],
 };
 
-export const DEFAULT_AI_RESPONSES = [
+export const AI_RESPONSES_EN: Record<string, string[]> = {
+  happy: [
+    'That is wonderful to hear. I am really happy for you. Want to tell me what made your day feel good?',
+  ],
+  excited: [
+    'You sound excited and full of energy. What happened?',
+  ],
+  calm: [
+    'Feeling calm is precious. I am glad you have this steady moment.',
+  ],
+  loved: [
+    'Feeling loved can be so warm and safe. You deserve that feeling.',
+  ],
+  sad: [
+    'I am sorry you are feeling sad. I am here with you, and you do not have to carry it alone.',
+  ],
+  angry: [
+    'Feeling angry makes sense. Let us slow down together and talk through what happened.',
+  ],
+  anxious: [
+    'Anxiety can feel heavy. Try a slow breath with me: in for 4, hold for 4, out for 4.',
+  ],
+  scared: [
+    'It is okay to feel scared. Thank you for sharing it. You are not alone right now.',
+  ],
+  tired: [
+    'Being tired is real. Rest is not a weakness, it is care for yourself.',
+  ],
+  confused: [
+    'Feeling confused is normal when things are complicated. We can sort it out one step at a time.',
+  ],
+};
+
+export const DEFAULT_AI_RESPONSES_ZH = [
   '我在这里，你说。',
   '谢谢你愿意和我分享 💙',
   '你愿意多告诉我一些吗？',
   '我听到你了。感觉怎么样？',
 ];
 
-export const CRISIS_RESPONSE =
+export const DEFAULT_AI_RESPONSES_EN = [
+  'I am here with you. Tell me more when you are ready.',
+  'Thank you for sharing this with me 💙',
+  'Would you like to tell me a little more?',
+  'I hear you. How does it feel right now?',
+];
+
+export const CRISIS_RESPONSE_ZH =
   '我注意到你说的话让我很担心你 💙 你不是一个人。如果你现在很痛苦，请告诉一个你信任的大人，或者拨打心理援助热线：**北京 010-82951332 · 全国 400-161-9995**。我一直在这里陪着你。';
+
+export const CRISIS_RESPONSE_EN =
+  'I am really concerned about your safety 💙 You are not alone. Please tell a trusted adult right now, or contact a local crisis hotline in your area. If there is immediate danger, call your local emergency number now.';

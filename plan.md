@@ -1,41 +1,142 @@
-# Implementation Plan: Havenly (Web Version)
+# HavenlyAPP 总体计划
 
-This plan adapts the "Havenly MVP Development" roadmap from the README for the current React + Vite Web codebase.
+## 1. 项目目标
 
-## Current Status
-- **Phase 1 (Foundation)**: ✅
-  - Project setup (Vite + React + TS)
-  - Basic Navigation (BottomNav)
-  - Core Screens (Home, Mood, Chat, Garden, Dashboard)
-  - Basic Mock Data / Local Storage
+构建一个面向青少年的情绪支持产品，形成“记录 - 陪伴 - 反馈 - 成长”的闭环：
+- 低门槛：用户能在 10 秒内完成一次心情记录
+- 有陪伴：用户可随时与 AI 助手进行支持性对话
+- 可持续：通过花园养成机制提高连续使用率
+- 可洞察：用户能看到自己情绪趋势并获得温和反馈
 
-## Phase 2: Age-Differentiated Core Entry (UI/UX) ✅
-- [x] **Age Switcher**: Global state for `ageGroup` in `App.tsx`.
-- [x] **Top Age Switcher Component**: Added to `HomeScreen`.
-- [x] **Dynamic Content**:
-  - [x] **Mood Grid**: Toddler (Simple/No note), Teen (Expanded/Journal mode).
-  - [x] **Chat**: Toddler-specific simple responses.
-  - [x] **Dashboard**: Age-specific insights (streak card, 7-day calendar).
+## 2. 产品原则
 
-## Phase 3: AI Companion & Backend ✅
-- [x] **AI Chat Integration**: `src/utils/aiService.ts` calls GitHub Models (`gpt-4o-mini`) via `VITE_GITHUB_TOKEN`; falls back to curated responses.
-- [x] **System Prompting**: Age-appropriate system prompts (toddler / kid / teen).
-- [x] **Crisis Detection**: Pre-filter via `isCrisisMessage()` before any API call.
-- [x] **Home AI Widget**: Quick "岛岛" daily greeting banner on `HomeScreen` with last-mood context.
-- [ ] **Firebase Integration**: Replace local storage with Firestore (requires credentials).
+- 安全优先：尤其针对未成年人场景
+- 年龄适配：不同年龄层不同语气与交互密度
+- 陪伴导向：鼓励表达，不做医疗诊断
+- 隐私优先：最小化采集，清晰数据边界
+- 渐进迭代：先稳定核心闭环，再扩展生态功能
 
-## Phase 4: Gamification (Garden) ✅
-- [x] **Streak Tracking**: `getStreak()` / `onMoodLogged()` in `storage.ts`.
-- [x] **Garden Logic**: Auto-water plants + boost pet happiness on every mood log.
-- [x] **Bio-Psycho Encyclopedia**: `SpeciesCard` component — clicking any unlocked species shows biological facts + psychological metaphors.
-- [ ] **Island View**: Interactable island background (future visual enhancement).
+## 3. 当前基线（已具备）
 
-## Phase 5: Insights ✅
-- [x] **Dashboard**: 7-day mood calendar (calendar-day bucketed, today highlighted).
-- [x] **Streak Card**: Shown on Dashboard when streak > 0.
+- 核心页面与流程：Home / Mood / Chat / Garden / Insights
+- 年龄分层：toddler / kid / teen
+- 双语能力：英文 + 中文，浏览器自动识别，识别失败默认英文
+- AI 双路径：在线模型 + 本地兜底
+- 危机关键词检测与安全回复
+- 本地存储完整闭环
+- 可选 Firebase 云同步基础能力
 
-## Future / Backlog
-- [ ] **Account Linking (Option B)**: Independent child/teen + parent registration linked via invite code / QR (requires Firebase Auth + Firestore).
-- [ ] **Parent Dashboard**: Safe aggregated view for linked parent account with crisis notifications.
-- [ ] **Freemium Store**: Marketplace for exotic species, special habitats, educational packs.
-- [ ] **Island Visualizer**: Transform home background into an interactable "Island" with the garden species visible.
+## 4. 里程碑路线图
+
+## 阶段 A：稳定性与工程质量（短期）
+
+目标：把现有功能从“可用”提升到“稳定可维护”。
+
+主要工作：
+- 统一文案资源组织方式，降低硬编码风险
+- 完善错误处理：AI 请求失败、云同步失败、数据解析失败
+- 清理和收敛状态管理边界，减少页面间耦合
+- 增加关键日志与调试标识
+
+验收标准：
+- 主要流程无阻断性错误
+- 关键失败场景均有可理解降级反馈
+- 文档与代码行为一致
+
+## 阶段 B：AI 安全与对话体验（短中期）
+
+目标：在安全边界内提升回答质量与稳定性。
+
+主要工作：
+- 危机识别词库与规则迭代
+- 年龄分层提示词持续调优
+- 对话上下文策略优化（长度、记忆窗口）
+- 建立离线兜底文案评审机制
+
+验收标准：
+- 触发危机场景时行为可预测、可验证
+- 多轮对话连贯性提升
+- 未配置 Token 时体验仍可接受
+
+## 阶段 C：账号与云同步完善（中期）
+
+目标：支持多设备一致体验和账号扩展。
+
+主要工作：
+- 从匿名认证演进到可升级账号体系
+- 设计并实现数据冲突处理策略（本地优先/时间戳优先）
+- 细化 Firestore 安全规则与迁移方案
+- 增加同步状态可见性（例如最近同步时间）
+
+验收标准：
+- 同一账号多端数据一致
+- 同步失败可恢复且不丢关键数据
+- 安全规则通过最小权限原则审查
+
+## 阶段 D：家庭协作能力（中长期）
+
+目标：在保护未成年人隐私前提下，提供家长协作视角。
+
+主要工作：
+- 设计邀请制绑定（邀请码/二维码）
+- 家长端仅展示聚合与趋势，不暴露原始敏感内容
+- 异常风险提醒策略（可配置、可静默）
+
+验收标准：
+- 绑定流程清晰、可撤销
+- 权限边界可解释、可测试
+- 风险通知机制可用且不滥发
+
+## 阶段 E：内容与增长（中长期）
+
+目标：提升日活与留存，形成长期陪伴产品心智。
+
+主要工作：
+- 花园玩法扩展（任务、章节、连续目标）
+- 物种百科内容扩展（科学事实 + 心理隐喻）
+- 奖励体系平衡（金币产出、消耗、解锁节奏）
+- 活动化运营能力预留（节日主题、限时内容）
+
+验收标准：
+- 连续打卡率和回访率提升
+- 玩法节奏不过度打扰核心情绪记录行为
+
+## 阶段 F：发布与运维（持续）
+
+目标：建立可持续发布和回归验证机制。
+
+主要工作：
+- 核心路径自动化测试（记录、聊天、同步、花园）
+- 性能与可访问性优化
+- 发布前检查清单（环境变量、规则、回滚方案）
+- 运行监控与告警基线
+
+验收标准：
+- 版本迭代可控，重大回归可提前发现
+- 线上问题可定位、可追踪、可回滚
+
+## 5. 风险与应对
+
+主要风险：
+- AI 回答不可控风险
+- 未成年人场景的合规与安全风险
+- 多设备同步一致性风险
+- 功能扩展导致复杂度上升
+
+应对策略：
+- 分层安全策略（关键词、系统提示、兜底文案）
+- 权限最小化与数据分级展示
+- 明确同步冲突策略并做灰度验证
+- 每阶段保留“工程清债”窗口
+
+## 6. 计划执行方式
+
+建议采用双周迭代：
+- 第 1 周：需求拆分 + 开发 + 自测
+- 第 2 周：联调 + 回归 + 文档更新 + 发布
+
+每次迭代输出：
+- 可演示功能
+- 变更文档
+- 风险清单更新
+- 下阶段拆分任务

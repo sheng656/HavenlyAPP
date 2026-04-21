@@ -156,10 +156,10 @@ export const spendCoins = (amount: number): boolean => {
 
 // Pets
 const DEFAULT_PETS: Pet[] = [
-  { id: 'penguin', name: '小企鹅', emoji: '🐧', level: 1, happiness: 80, unlocked: true },
-  { id: 'cat', name: '小猫咪', emoji: '🐱', level: 1, happiness: 0, unlocked: false },
-  { id: 'bunny', name: '小兔子', emoji: '🐰', level: 1, happiness: 0, unlocked: false },
-  { id: 'bear', name: '小熊', emoji: '🐻', level: 1, happiness: 0, unlocked: false },
+  { id: 'penguin', name: 'Penguin', emoji: '🐧', level: 1, happiness: 80, unlocked: true },
+  { id: 'cat', name: 'Kitty', emoji: '🐱', level: 1, happiness: 0, unlocked: false },
+  { id: 'bunny', name: 'Bunny', emoji: '🐰', level: 1, happiness: 0, unlocked: false },
+  { id: 'bear', name: 'Bear', emoji: '🐻', level: 1, happiness: 0, unlocked: false },
 ];
 
 export const getPets = (): Pet[] => {
@@ -178,10 +178,10 @@ export const savePets = (pets: Pet[]): void => {
 
 // Plants
 const DEFAULT_PLANTS: Plant[] = [
-  { id: 'sunflower', name: '向日葵', emoji: '🌻', stage: 0, waterLevel: 50, unlocked: true },
-  { id: 'rose', name: '玫瑰花', emoji: '🌹', stage: 0, waterLevel: 0, unlocked: false },
-  { id: 'cactus', name: '仙人掌', emoji: '🌵', stage: 0, waterLevel: 0, unlocked: false },
-  { id: 'mushroom', name: '蘑菇', emoji: '🍄', stage: 0, waterLevel: 0, unlocked: false },
+  { id: 'sunflower', name: 'Sunflower', emoji: '🌻', stage: 0, waterLevel: 50, unlocked: true },
+  { id: 'rose', name: 'Rose', emoji: '🌹', stage: 0, waterLevel: 0, unlocked: false },
+  { id: 'cactus', name: 'Cactus', emoji: '🌵', stage: 0, waterLevel: 0, unlocked: false },
+  { id: 'mushroom', name: 'Mushroom', emoji: '🍄', stage: 0, waterLevel: 0, unlocked: false },
 ];
 
 export const getPlants = (): Plant[] => {

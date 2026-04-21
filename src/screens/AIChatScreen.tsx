@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import type { Screen, ChatMessage, AgeGroup } from '../types';
+import type { Screen, ChatMessage, AgeGroup, Language } from '../types';
 import { getAIResponse } from '../utils/aiService';
 import { getChatMessages, saveChatMessage, generateId } from '../utils/storage';
 import styles from './AIChatScreen.module.css';
@@ -8,22 +8,26 @@ interface Props {
   onNavigate: (screen: Screen) => void;
   initialMoodId?: string | null;
   ageGroup: AgeGroup;
+  language: Language;
 }
 
-const INITIAL_MSG: ChatMessage = {
+const getInitialMsg = (language: Language): ChatMessage => ({
   id: 'init',
   role: 'ai',
-  content: '你好！我是岛岛 🐧 你的心情小助手。今天感觉怎么样？',
+  content:
+    language === 'zh'
+      ? '你好！我是岛岛 🐧 你的心情小助手。今天感觉怎么样？'
+      : 'Hi! I am Dodo 🐧 your mood buddy. How are you feeling today?',
   timestamp: Date.now(),
-};
+});
 
 /** Minimum visible "typing" delay in ms so the reply doesn't feel instant. */
 const MIN_REPLY_DELAY = 800;
 
-export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup }: Props) {
+export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup, language }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const saved = getChatMessages();
-    return saved.length > 0 ? saved : [INITIAL_MSG];
+    return saved.length > 0 ? saved : [getInitialMsg(language)];
   });
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -51,7 +55,7 @@ export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup }: Pr
 
     // Run AI call and minimum delay in parallel; whichever takes longer wins
     const [reply] = await Promise.all([
-      getAIResponse(text, ageGroup, initialMoodId, messages),
+      getAIResponse(text, ageGroup, language, initialMoodId, messages),
       new Promise<void>((res) => setTimeout(res, MIN_REPLY_DELAY)),
     ]);
 
@@ -73,6 +77,14 @@ export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup }: Pr
     }
   };
 
+  const quickReplies = language === 'zh'
+    ? ['我今天很开心 😊', '有点难过...', '帮我放松一下', '我想聊聊']
+    : ['I feel happy today 😊', 'I feel a little sad...', 'Help me relax', 'I want to talk'];
+
+  const headerName = language === 'zh' ? '岛岛' : 'Dodo';
+  const headerStatus = language === 'zh' ? '随时在线，陪伴你' : 'Online now, here with you';
+  const inputPlaceholder = language === 'zh' ? '和岛岛说说话...' : 'Talk with Dodo...';
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -80,8 +92,8 @@ export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup }: Pr
         <div className={styles.headerInfo}>
           <span className={styles.headerEmoji}>🐧</span>
           <div>
-            <div className={styles.headerName}>岛岛</div>
-            <div className={styles.headerStatus}>随时在线，陪伴你</div>
+            <div className={styles.headerName}>{headerName}</div>
+            <div className={styles.headerStatus}>{headerStatus}</div>
           </div>
         </div>
         <div className={styles.headerSpacer} />
@@ -124,7 +136,7 @@ export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup }: Pr
       </div>
 
       <div className={styles.quickReplies}>
-        {['我今天很开心 😊', '有点难过...', '帮我放松一下', '我想聊聊'].map((q) => (
+        {quickReplies.map((q) => (
           <button
             key={q}
             className={styles.quickBtn}
@@ -141,7 +153,7 @@ export default function AIChatScreen({ onNavigate, initialMoodId, ageGroup }: Pr
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="和岛岛说说话..."
+          placeholder={inputPlaceholder}
           rows={1}
           maxLength={500}
         />
