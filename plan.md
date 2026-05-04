@@ -1,142 +1,142 @@
-# HavenlyAPP 总体计划
+# HavenlyAPP Roadmap
 
-## 1. 项目目标
+## 1. Product Goals
 
-构建一个面向青少年的情绪支持产品，形成“记录 - 陪伴 - 反馈 - 成长”的闭环：
-- 低门槛：用户能在 10 秒内完成一次心情记录
-- 有陪伴：用户可随时与 AI 助手进行支持性对话
-- 可持续：通过花园养成机制提高连续使用率
-- 可洞察：用户能看到自己情绪趋势并获得温和反馈
+Build an emotional support product for teenagers and close the loop of “track - companion - feedback - grow”:
+- Low friction: users can complete a mood check-in within 10 seconds
+- Supportive companionship: users can talk to an AI assistant at any time
+- Sustainable: increase repeat usage through a garden progression system
+- Insightful: users can see emotional trends and receive gentle feedback
 
-## 2. 产品原则
+## 2. Product Principles
 
-- 安全优先：尤其针对未成年人场景
-- 年龄适配：不同年龄层不同语气与交互密度
-- 陪伴导向：鼓励表达，不做医疗诊断
-- 隐私优先：最小化采集，清晰数据边界
-- 渐进迭代：先稳定核心闭环，再扩展生态功能
+- Safety first, especially for minors
+- Age-appropriate: different tone and interaction density for different age groups
+- Companion-oriented: encourage expression, do not provide medical diagnosis
+- Privacy-first: minimize collection and keep data boundaries clear
+- Progressive iteration: stabilize the core loop first, then expand the ecosystem
 
-## 3. 当前基线（已具备）
+## 3. Current Baseline (Already in Place)
 
-- 核心页面与流程：Home / Mood / Chat / Garden / Insights
-- 年龄分层：toddler / kid / teen
-- 双语能力：英文 + 中文，浏览器自动识别，识别失败默认英文
-- AI 双路径：在线模型 + 本地兜底
-- 危机关键词检测与安全回复
-- 本地存储完整闭环
-- 可选 Firebase 云同步基础能力
+- Core pages and flow: Home / Mood / Chat / Garden / Insights
+- Age segmentation: toddler / kid / teen
+- Bilingual support: English + Chinese, browser auto-detection, English by default on detection failure
+- Dual-path AI: online model + local fallback
+- Crisis keyword detection and safe responses
+- Complete local storage loop
+- Basic optional Firebase cloud sync
 
-## 4. 里程碑路线图
+## 4. Milestone Roadmap
 
-## 阶段 A：稳定性与工程质量（短期）
+## Phase A: Stability and Engineering Quality (Short Term)
 
-目标：把现有功能从“可用”提升到“稳定可维护”。
+Goal: move existing features from “usable” to “stable and maintainable.”
 
-主要工作：
-- 统一文案资源组织方式，降低硬编码风险
-- 完善错误处理：AI 请求失败、云同步失败、数据解析失败
-- 清理和收敛状态管理边界，减少页面间耦合
-- 增加关键日志与调试标识
+Main work:
+- Standardize how copy resources are organized to reduce hardcoding risk
+- Improve error handling for AI request failures, cloud sync failures, and data parsing failures
+- Clean up and narrow state-management boundaries to reduce coupling between pages
+- Add key logs and debug markers
 
-验收标准：
-- 主要流程无阻断性错误
-- 关键失败场景均有可理解降级反馈
-- 文档与代码行为一致
+Acceptance criteria:
+- No blocking errors in the main flow
+- Clear fallback feedback for all key failure scenarios
+- Documentation matches actual code behavior
 
-## 阶段 B：AI 安全与对话体验（短中期）
+## Phase B: AI Safety and Conversation Experience (Short to Mid Term)
 
-目标：在安全边界内提升回答质量与稳定性。
+Goal: improve response quality and stability within safety boundaries.
 
-主要工作：
-- 危机识别词库与规则迭代
-- 年龄分层提示词持续调优
-- 对话上下文策略优化（长度、记忆窗口）
-- 建立离线兜底文案评审机制
+Main work:
+- Iterate on crisis keyword lists and detection rules
+- Continuously tune age-based prompts
+- Optimize conversation context strategy, including length and memory window
+- Establish a review process for offline fallback copy
 
-验收标准：
-- 触发危机场景时行为可预测、可验证
-- 多轮对话连贯性提升
-- 未配置 Token 时体验仍可接受
+Acceptance criteria:
+- Crisis scenarios are predictable and verifiable
+- Multi-turn conversation coherence improves
+- Experience remains acceptable when no token is configured
 
-## 阶段 C：账号与云同步完善（中期）
+## Phase C: Account and Cloud Sync Improvements (Mid Term)
 
-目标：支持多设备一致体验和账号扩展。
+Goal: support a consistent multi-device experience and account expansion.
 
-主要工作：
-- 从匿名认证演进到可升级账号体系
-- 设计并实现数据冲突处理策略（本地优先/时间戳优先）
-- 细化 Firestore 安全规则与迁移方案
-- 增加同步状态可见性（例如最近同步时间）
+Main work:
+- Evolve from anonymous auth to an upgradable account system
+- Design and implement data conflict handling strategies (local-first / timestamp-first)
+- Refine Firestore security rules and migration plans
+- Add sync-state visibility, such as the last sync time
 
-验收标准：
-- 同一账号多端数据一致
-- 同步失败可恢复且不丢关键数据
-- 安全规则通过最小权限原则审查
+Acceptance criteria:
+- Data stays consistent across devices for the same account
+- Sync failures are recoverable and do not lose critical data
+- Security rules pass a least-privilege review
 
-## 阶段 D：家庭协作能力（中长期）
+## Phase D: Family Collaboration Capabilities (Mid to Long Term)
 
-目标：在保护未成年人隐私前提下，提供家长协作视角。
+Goal: provide a parent collaboration view while protecting minor privacy.
 
-主要工作：
-- 设计邀请制绑定（邀请码/二维码）
-- 家长端仅展示聚合与趋势，不暴露原始敏感内容
-- 异常风险提醒策略（可配置、可静默）
+Main work:
+- Design invitation-based pairing (invite code / QR code)
+- Show parents only aggregates and trends, not raw sensitive content
+- Risk alert strategies for unusual behavior, configurable and optionally silent
 
-验收标准：
-- 绑定流程清晰、可撤销
-- 权限边界可解释、可测试
-- 风险通知机制可用且不滥发
+Acceptance criteria:
+- The pairing flow is clear and revocable
+- Permission boundaries are explainable and testable
+- Risk notifications work without spamming
 
-## 阶段 E：内容与增长（中长期）
+## Phase E: Content and Growth (Mid to Long Term)
 
-目标：提升日活与留存，形成长期陪伴产品心智。
+Goal: improve daily active use and retention, and build a long-term companionship mindset.
 
-主要工作：
-- 花园玩法扩展（任务、章节、连续目标）
-- 物种百科内容扩展（科学事实 + 心理隐喻）
-- 奖励体系平衡（金币产出、消耗、解锁节奏）
-- 活动化运营能力预留（节日主题、限时内容）
+Main work:
+- Expand garden gameplay with tasks, chapters, and streak goals
+- Expand species encyclopedia content with scientific facts and psychological metaphors
+- Balance the reward system, including coin output, consumption, and unlock pacing
+- Reserve space for event-based operations such as seasonal themes and limited-time content
 
-验收标准：
-- 连续打卡率和回访率提升
-- 玩法节奏不过度打扰核心情绪记录行为
+Acceptance criteria:
+- Check-in streaks and return visits increase
+- Gameplay pacing does not overly disturb the core mood-tracking flow
 
-## 阶段 F：发布与运维（持续）
+## Phase F: Release and Operations (Ongoing)
 
-目标：建立可持续发布和回归验证机制。
+Goal: establish a sustainable release and regression-verification process.
 
-主要工作：
-- 核心路径自动化测试（记录、聊天、同步、花园）
-- 性能与可访问性优化
-- 发布前检查清单（环境变量、规则、回滚方案）
-- 运行监控与告警基线
+Main work:
+- Automate tests for core paths: tracking, chat, sync, and garden
+- Improve performance and accessibility
+- Pre-release checklist for environment variables, rules, and rollback plans
+- Baseline monitoring and alerting
 
-验收标准：
-- 版本迭代可控，重大回归可提前发现
-- 线上问题可定位、可追踪、可回滚
+Acceptance criteria:
+- Release iterations are controllable and major regressions are detected early
+- Production issues are locatable, traceable, and rollback-ready
 
-## 5. 风险与应对
+## 5. Risks and Mitigations
 
-主要风险：
-- AI 回答不可控风险
-- 未成年人场景的合规与安全风险
-- 多设备同步一致性风险
-- 功能扩展导致复杂度上升
+Main risks:
+- Uncontrolled AI responses
+- Compliance and safety risks in a minor-oriented context
+- Multi-device sync consistency risks
+- Rising complexity as features expand
 
-应对策略：
-- 分层安全策略（关键词、系统提示、兜底文案）
-- 权限最小化与数据分级展示
-- 明确同步冲突策略并做灰度验证
-- 每阶段保留“工程清债”窗口
+Mitigation strategies:
+- Layered safety controls: keywords, system prompts, and fallback copy
+- Minimize permissions and show data in tiers
+- Define sync conflict strategies clearly and verify them with staged rollout
+- Keep an engineering debt cleanup window in each phase
 
-## 6. 计划执行方式
+## 6. Execution Model
 
-建议采用双周迭代：
-- 第 1 周：需求拆分 + 开发 + 自测
-- 第 2 周：联调 + 回归 + 文档更新 + 发布
+Recommended two-week iteration cycle:
+- Week 1: requirement breakdown + development + self-testing
+- Week 2: integration + regression checks + documentation updates + release
 
-每次迭代输出：
-- 可演示功能
-- 变更文档
-- 风险清单更新
-- 下阶段拆分任务
+Each iteration should output:
+- Demo-ready features
+- Change documentation
+- Updated risk list
+- Next-phase task breakdown
